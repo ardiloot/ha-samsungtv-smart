@@ -18,8 +18,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_DEVICE_ID,
     CONF_API_KEY,
-    CONF_WOL_PACKET_TYPE,
-    CONF_WOL_INTERFACE,
     CONF_BROADCAST_ADDRESS,
     CONF_DEVICE_ID,
     CONF_HOST,
@@ -56,6 +54,8 @@ from .const import (
     CONF_UPDATE_METHOD,
     CONF_UPDATE_CUSTOM_PING_URL,
     CONF_SCAN_APP_HTTP,
+    CONF_WOL_PACKET_TYPE,
+    CONF_WOL_INTERFACE,
     DATA_CFG_YAML,
     DATA_OPTIONS,
     DEFAULT_PORT,
