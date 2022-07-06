@@ -5,6 +5,7 @@ import async_timeout
 from datetime import datetime, timedelta
 import json
 import logging
+import socket
 from socket import error as socketError
 from time import sleep
 from urllib.parse import parse_qs, urlparse
@@ -160,6 +161,29 @@ SCAN_INTERVAL = timedelta(seconds=15)
 
 _LOGGER = logging.getLogger(__name__)
 
+
+def etherwake(mac, interface="eth0"):
+    _LOGGER.info(
+        "etherwake %s %s",
+        mac,
+        interface
+    )
+
+    mac = mac.replace(":", "")
+    if len(mac) != 12:
+        raise ValueError("Incorrect MAC address format")
+
+    s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
+    s.bind((interface, 0)) 
+
+    src_addr = s.getsockname()[4]
+    dst_addr = bytes.fromhex(mac)
+    payload = bytes.fromhex("F" * 12) + dst_addr * 16
+    ethertype = b"\x08\x42"
+    packet = dst_addr+src_addr+ethertype+payload
+
+    s.send(packet)
+    s.close()
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities
@@ -1085,7 +1109,8 @@ class SamsungTVDevice(MediaPlayerEntity):
             if i > 0:
                 sleep(0.25)
             try:
-                send_magic_packet(self._mac, ip_address=ip_address)
+                etherwake(self._mac)
+                #send_magic_packet(self._mac)#, ip_address=ip_address)
                 send_success = True
             except socketError as exc:
                 _LOGGER.warning(
@@ -1393,7 +1418,7 @@ class SamsungTVDevice(MediaPlayerEntity):
             elif app_launch_method == AppLaunchMethod.Rest:
                 method = CMD_RUN_APP_REST
             else:
-                method = CMD_RUN_APP
+                method = CMD_RUN_APP                
 
         await self.async_send_command(app_id, method)
 
