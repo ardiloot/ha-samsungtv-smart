@@ -18,6 +18,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_DEVICE_ID,
     CONF_API_KEY,
+    CONF_WOL_PACKET_TYPE,
+    CONF_WOL_INTERFACE,
     CONF_BROADCAST_ADDRESS,
     CONF_DEVICE_ID,
     CONF_HOST,
