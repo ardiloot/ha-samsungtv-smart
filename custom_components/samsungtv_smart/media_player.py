@@ -44,6 +44,8 @@ from homeassistant.const import (
     CONF_SERVICE_DATA,
     CONF_TIMEOUT,
     CONF_TOKEN,
+    CONF_WOL_PACKET_TYPE,
+    CONF_WOL_INTERFACE,
     STATE_OFF,
     STATE_ON,
     STATE_UNAVAILABLE,
@@ -162,7 +164,7 @@ SCAN_INTERVAL = timedelta(seconds=15)
 _LOGGER = logging.getLogger(__name__)
 
 
-def etherwake(mac, interface="eth0"):
+def etherwake(mac, interface):
     _LOGGER.info(
         "etherwake %s %s",
         mac,
@@ -303,6 +305,8 @@ class SamsungTVDevice(MediaPlayerEntity):
         )
 
         # Save a reference to the imported config
+        self._wol_packet_type = config.get(CONF_WOL_PACKET_TYPE)
+        self._wol_interface = config.get(CONF_WOL_INTERFACE)
         self._broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
         # load sources list
@@ -1103,14 +1107,23 @@ class SamsungTVDevice(MediaPlayerEntity):
         if not wol_repeat:
             wol_repeat = self._get_option(CONF_WOL_REPEAT, 1)
         wol_repeat = max(1, min(wol_repeat, MAX_WOL_REPEAT))
+        wol_packet_type = self._wol_packet_type or "udp"
+        wol_interface = self._wol_interface or "eth0"
         ip_address = self._broadcast or "255.255.255.255"
+
         send_success = False
         for i in range(wol_repeat):
             if i > 0:
                 sleep(0.25)
             try:
-                etherwake(self._mac)
-                #send_magic_packet(self._mac)#, ip_address=ip_address)
+                if wol_packet_type == "udp":
+                    send_magic_packet(self._mac, ip_address=ip_address)
+                elif wol_packet_type == "ethernet":
+                    etherwake(self._mac, wol_interface)
+                else:
+                    _LOGGER.error("Unknown WOL packet type: %s", wol_packet_type)
+                    break
+
                 send_success = True
             except socketError as exc:
                 _LOGGER.warning(
@@ -1418,7 +1431,7 @@ class SamsungTVDevice(MediaPlayerEntity):
             elif app_launch_method == AppLaunchMethod.Rest:
                 method = CMD_RUN_APP_REST
             else:
-                method = CMD_RUN_APP                
+                method = CMD_RUN_APP
 
         await self.async_send_command(app_id, method)
 

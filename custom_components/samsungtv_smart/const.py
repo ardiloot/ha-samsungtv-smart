@@ -59,6 +59,8 @@ CONF_USE_MUTE_CHECK = "use_mute_check"
 CONF_USE_ST_CHANNEL_INFO = "use_st_channel_info"
 CONF_USE_ST_STATUS_INFO = "use_st_status_info"
 CONF_WOL_REPEAT = "wol_repeat"
+CONF_WOL_PACKET_TYPE = "wol_packet_type"
+CONF_WOL_INTERFACE = "wol_interface"
 CONF_WS_NAME = "ws_name"
 
 # obsolete

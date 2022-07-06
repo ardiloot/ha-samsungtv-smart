@@ -88,6 +88,8 @@ SAMSMART_SCHEMA = {
     vol.Optional(CONF_CHANNEL_LIST): cv.string,
     vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
     vol.Optional(CONF_MAC): cv.string,
+    vol.Optional(CONF_WOL_PACKET_TYPE): cv.string,
+    vol.Optional(CONF_WOL_INTERFACE): cv.string,
     vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
 }
 
