@@ -165,7 +165,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def etherwake(mac, interface):
-    _LOGGER.info(
+    _LOGGER.debug(
         "etherwake %s %s",
         mac,
         interface
