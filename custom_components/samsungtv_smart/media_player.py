@@ -175,6 +175,8 @@ def etherwake(mac, interface):
     if len(mac) != 12:
         raise ValueError("Incorrect MAC address format")
 
+    # Python needs elevated permissions to use raw sockets:
+    #   setcap cap_net_raw,cap_net_admin=eip "your python executable path"
     s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
     s.bind((interface, 0)) 
 
